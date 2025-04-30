@@ -1,0 +1,27 @@
+# permissions for end users to edit smartlandlords.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: smartlandlord-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: smartlandlord-editor-role
+rules:
+- apiGroups:
+  - realtortools.realtordevelopments.io
+  resources:
+  - smartlandlords
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - realtortools.realtordevelopments.io
+  resources:
+  - smartlandlords/status
+  verbs:
+  - get
