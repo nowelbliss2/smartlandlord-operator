@@ -119,7 +119,22 @@ func (r *SmartlandlordReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
       logger.Info(fmt.Sprintf("Deployment %s created", req.Name))
     }
+   
+    
+	if *smartlandlordDeployment.Spec.Replicas != replicas {
+      if err = r.Update(ctx, smartlandlord); err != nil {
+	    logger.Error(err, "Failed to update Deployment",
+		         "Deployment.Namespace", smartlandlord.Namespace, "Deployment.Name", smartlandlord.Name)
 
+	    if err := r.Get(ctx, req.NamespacedName, smartlandlord); err != nil {
+				logger.Error(err, "Failed to re-fetch Smartlandlord")
+				return ctrl.Result{}, err
+			}
+  
+	  }
+
+			return ctrl.Result{}, err
+	}
 	return ctrl.Result{}, nil
 }
 
