@@ -121,14 +121,14 @@ func (r *SmartlandlordReconciler) Reconcile(ctx context.Context, req ctrl.Reques
     }
    
     
-	if *smartlandlordDeployment.Spec.Replicas != replicas {
-	  smartlandlordDeployment.Spec.Replicas = &replicas
-      if err = r.Update(ctx, smartlandlord); err != nil {
-	    logger.Error(err, "Failed to update Deployment",
-		         "Deployment.Namespace", smartlandlordDeployment.Namespace, "Deployment.Name", smartlandlordDeployment.Name)
+	if smartlandlordDeployment.Spec.Replicas != replicas {
+	     smartlandlordDeployment.Spec.Replicas = &replicas
+           if err = r.Update(ctx, smartlandlord); err != nil {
+	         logger.Error(err, "Failed to update Deployment",
+		       "Deployment.Namespace", smartlandlordDeployment.Namespace, "Deployment.Name", smartlandlordDeployment.Name)
 
-        return ctrl.Result{}, err
-	  }
+           return ctrl.Result{}, err
+	       }
 	  
 	  return ctrl.Result{Requeue: true}, nil
 	}
