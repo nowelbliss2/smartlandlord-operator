@@ -6,4 +6,5 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
   name: smartlandlord-sample
 spec:
-  # TODO(user): Add fields here
+  image: nabliss22/smartlandlord:main
+  replicas: 3
