@@ -118,22 +118,28 @@ func (r *SmartlandlordReconciler) Reconcile(ctx context.Context, req ctrl.Reques
       }
 
       logger.Info(fmt.Sprintf("Deployment %s created", req.Name))
-    }
-   
-    
-	if smartlandlordDeployment.Spec.Replicas != replicas {
-	     smartlandlordDeployment.Spec.Replicas = &replicas
-           if err = r.Update(ctx, smartlandlord); err != nil {
-	         logger.Error(err, "Failed to update Deployment",
-		       "Deployment.Namespace", smartlandlordDeployment.Namespace, "Deployment.Name", smartlandlordDeployment.Name)
+	  return ctrl.Result{}, err
+    } else {
+      
+      var current_replicas int32 = *smartlandlordDeployment.Spec.Replicas
+	  var expected_replicas int32 = smartlandlord.Spec.Replicas
+	
+	  if current_replicas != expected_replicas {
+	    smartlandlordDeployment.Spec.Replicas = &replicas
+	    if err = r.Update(ctx, &smartlandlordDeployment); err != nil {
+          logger.Error(err, "Failed to update Deployment",
+            "Deployment.Namespace", smartlandlord.Namespace, "Deployment.Name", smartlandlord.Name)
 
-           return ctrl.Result{}, err
-	       }
-	  
-	  return ctrl.Result{Requeue: true}, nil
-	}
+        return ctrl.Result{}, err
+        }
 
-	return ctrl.Result{}, nil
+       return ctrl.Result{}, nil
+	   }
+
+	 return ctrl.Result{}, nil
+     }
+
+  return ctrl.Result{}, nil  
 }
 
 func updateStatus(w *realtortoolsv1alpha1.Smartlandlord, statusType string, statusReason string, statusMessage string, condition metav1.ConditionStatus) {
