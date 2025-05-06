@@ -22,15 +22,15 @@ import (
 	"time"
 
     appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+    corev1 "k8s.io/api/core/v1"
+    "k8s.io/apimachinery/pkg/api/errors"
+    "k8s.io/apimachinery/pkg/api/meta"
+    metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     utilerrors "k8s.io/apimachinery/pkg/util/errors"
-	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
+    "k8s.io/apimachinery/pkg/runtime"
+    ctrl "sigs.k8s.io/controller-runtime"
+    "sigs.k8s.io/controller-runtime/pkg/client"
+    "sigs.k8s.io/controller-runtime/pkg/log"
 //    "sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	realtortoolsv1alpha1 "github.com/nowelbliss2/smartlandlord-operator/api/v1alpha1"
@@ -48,6 +48,7 @@ type SmartlandlordReconciler struct {
 // +kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=pods,verbs=get;list;watch
+// +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -118,7 +119,7 @@ func (r *SmartlandlordReconciler) Reconcile(ctx context.Context, req ctrl.Reques
       }
 
       logger.Info(fmt.Sprintf("Deployment %s created", req.Name))
-	  return ctrl.Result{}, err
+//	  return ctrl.Result{}, nil
     } else {
       
       var current_replicas int32 = *smartlandlordDeployment.Spec.Replicas
@@ -139,8 +140,46 @@ func (r *SmartlandlordReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	 return ctrl.Result{}, nil
      }
 
+    smartlandlordService := corev1.Service{}
+    err = r.Get(ctx, req.NamespacedName, &smartlandlordService)
+    if err != nil && errors.IsNotFound(err) {
+      smartlandlordService := corev1.Service {
+	    ObjectMeta: metav1.ObjectMeta {
+	      Name: "smartlandlord-service",
+		  Namespace: req.Namespace,
+	    },
+		Spec: corev1.ServiceSpec{
+		  Selector: map[string]string{
+		    "app": "smartlandlord",
+			"name": req.Name,
+	      },
+          Ports: []corev1.ServicePort{
+		    {
+              Name: "http",
+              Port: 8000,
+              Protocol: "TCP",
+            },
+		  },
+        },
+      } 
+      ctrl.SetControllerReference(smartlandlord, &smartlandlordService, r.Scheme)
+     
+	  
+      err := r.Create(ctx, &smartlandlordService)
+	  if err != nil {
+	    logger.Error(err, fmt.Sprintf("error creating %s web service.", req.Name))
+        updateStatus(smartlandlord, "OperatorFailed", "WebServiceCreationFailed", fmt.Sprintf("error creating %s web service: smartlandlord-service", err), metav1.ConditionFalse)
+        return ctrl.Result{}, utilerrors.NewAggregate([]error{err, r.Status().Update(ctx, smartlandlord)})
+		
+	  }
+	  logger.Info(fmt.Sprintf("web service smartlandlord-service created"))
+
+	}
+
+
   return ctrl.Result{}, nil  
 }
+
 
 func updateStatus(w *realtortoolsv1alpha1.Smartlandlord, statusType string, statusReason string, statusMessage string, condition metav1.ConditionStatus) {
 	meta.SetStatusCondition(&w.Status.Conditions, metav1.Condition{
