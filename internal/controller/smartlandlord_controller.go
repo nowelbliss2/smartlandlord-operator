@@ -43,13 +43,13 @@ type SmartlandlordReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-// +kubebuilder:rbac:groups=realtortools.realtordevelopments.io,resources=smartlandlords,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=realtortools.realtordevelopments.io,resources=smartlandlords/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=realtortools.realtordevelopments.io,resources=smartlandlords/finalizers,verbs=update
-// +kubebuilder:rbac:groups=core,resources=events,verbs=create;patch
-// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=core,resources=pods,verbs=get;list;watch
-// +kubebuilder:rbac:groups=core,resources=services,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=realtortools.realtordevelopments.io,namespace=smartlandlord-dev,resources=smartlandlords,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=realtortools.realtordevelopments.io,namespace=smartlandlord-dev,resources=smartlandlords/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=realtortools.realtordevelopments.io,namespace=smartlandlord-dev,resources=smartlandlords/finalizers,verbs=update
+// +kubebuilder:rbac:groups=core,namespace=smartlandlord-dev,resources=events,verbs=create;patch
+// +kubebuilder:rbac:groups=apps,namespace=smartlandlord-dev,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=core,namespace=smartlandlord-dev,resources=pods,verbs=get;list;watch
+// +kubebuilder:rbac:groups=core,namespace=smartlandlord-dev,resources=services,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
