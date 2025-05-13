@@ -15,6 +15,7 @@ namePrefix: smartlandlord-operator-
 #    someName: someValue
 
 resources:
+- ../rbac-dev
 - ../crd
 - ../rbac
 - ../manager

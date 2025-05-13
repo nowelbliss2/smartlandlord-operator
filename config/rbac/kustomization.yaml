@@ -24,13 +24,3 @@ resources:
 # if you do not want those helpers be installed with your Project.
 - smartlandlord_editor_role.yaml
 - smartlandlord_viewer_role.yaml
-
-transformers:
-- |-
-  apiVersion: builtin
-  kind: PatchTransformer
-  metadata:
-    name: fix-role-namespace
-  patch: '[{"op": "replace", "path": "/metadata/namespace", "value": "smartlandlord-dev"}]'
-  target:
-    kind: Role

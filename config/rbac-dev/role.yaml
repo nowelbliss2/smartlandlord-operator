@@ -1,0 +1,72 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: smartlandlord-dev-role
+  namespace: smartlandlord-dev
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - realtortools.realtordevelopments.io
+  resources:
+  - smartlandlords
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - realtortools.realtordevelopments.io
+  resources:
+  - smartlandlords/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - realtortools.realtordevelopments.io
+  resources:
+  - smartlandlords/status
+  verbs:
+  - get
+  - patch
+  - update
